@@ -18,15 +18,15 @@ defmodule Gherkin.Feature do
   end
 
   def parse([feature_line = Line.Feature | rest], []) do
-    parse rest, [ feature_line ], []
+    parse rest, [ feature_line ]
   end
 
   def parse([text_line = Line.Text | rest], lines) do
-    parse rest, [ text_line ], []
+    parse rest, lines ++ [ text_line ]
   end
 
   def parse([blank_line = Line.Blank | rest], lines) do
-    parse rest, [ text_line ], []
+    parse rest, lines
   end
 
   def parse([scenario_line = Line.Scenario | rest], lines) do
@@ -34,4 +34,10 @@ defmodule Gherkin.Feature do
     scenarios = Gherkin.Scenario.parse [scenario_line | rest ]
     %Gherkin.Feature{name: feature_line.name, scenarios: scenarios}
   end
+
+  def parse([], lines) do
+    [feature_line | rest ] = lines
+    %Gherkin.Feature{name: feature_line.name, scenarios: []}
+  end
+
 end
