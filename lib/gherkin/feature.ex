@@ -1,46 +1,37 @@
 defmodule Gherkin.Feature do
 
   @moduledoc """
-    Converts a set of parsed lines in to a block and maps to correct macros
+    Converts a set of parsed feature lines in to a feature with assiocated scenarios
   """
+
+  defstruct name: "", scenarios: []
 
   alias Gherkin.Line
 
-  defstruct feature_name: "", lines: []
-
   def parse([]) do
-    nil
+    []
   end
 
   def parse(lines) do
-    lines
-      |> Enum.map(fn(line) -> Line.type_of(line) end)
-
-    parse lines, [], []
+    parsed_lines = Enum.map(lines, fn(line) -> Line.type_of(line) end)
+    parse parsed_lines, []
   end
 
-  def parse([feature_line = Line.Feature | rest], [], features) do
-    parse rest, [ feature_line ], features
+  def parse([feature_line = Line.Feature | rest], []) do
+    parse rest, [ feature_line ], []
   end
 
-  def parse([feature_line = Line.Feature | rest], lines, features) do
-    parse rest, [], features ++ [ %Feature{feature_name: feature_line.name, lines: lines} ]
+  def parse([text_line = Line.Text | rest], lines) do
+    parse rest, [ text_line ], []
   end
 
-  def parse([step_line = Line.Step | rest], lines, features) do
-    parse rest, lines ++ [ step_line ], features
+  def parse([blank_line = Line.Blank | rest], lines) do
+    parse rest, [ text_line ], []
   end
 
-  def parse([text_line = Line.Text | rest], lines, features) do
-    parse rest, lines ++ [ step_line ], features
-  end
-
-  def parse([blank_line = Line.Blank | rest], lines, features) do
-    parse rest, lines, features
-  end
-
-  def parse([], lines, features) do
-    [ feature_line | _ ] = lines
-    features ++ [ %Feature{feature_name: feature_line.name, lines: lines} ]
+  def parse([scenario_line = Line.Scenario | rest], lines) do
+    [feature_line | rest ] = lines
+    scenarios = Gherkin.Scenario.parse [scenario_line | rest ]
+    %Gherkin.Feature{name: feature_line.name, scenarios: scenarios}
   end
 end
