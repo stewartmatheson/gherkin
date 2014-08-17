@@ -10,6 +10,7 @@ defmodule LineTest do
     { "When I interact with test", %Line.Step{step: "I interact with test", type: :When} },
     { "Then I assert something", %Line.Step{step: "I assert something", type: :Then} },
     { "Given I assert something", %Line.Step{step: "I assert something", type: :Given} },
+    { "As a user", %Line.Text{line: "As a user"} },
     { "", %Line.Blank{} }
   ]
   |> Enum.each(fn { text, type } -> 

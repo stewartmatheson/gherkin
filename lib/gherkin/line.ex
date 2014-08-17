@@ -8,6 +8,7 @@ defmodule Gherkin.Line do
   defmodule Scenario, do: defstruct line: "", name: ""
   defmodule Step, do: defstruct line: "", step: "", type: ""
   defmodule Blank, do: defstruct line: ""
+  defmodule Text, do: defstruct line: ""
 
   def type_of("") do
     %Blank{line: "" }
@@ -15,17 +16,20 @@ defmodule Gherkin.Line do
 
   def type_of(line) do
     cond do
-      line =~ ~r/^Feature: / ->
-        [ name | _ ] = String.split(line, ~r{^Feature: }, trim: true)
+      line =~ ~r/^Feature(:| ){1,3}/ ->
+        [ name | _ ] = String.split(line, ~r/^Feature(:| ){1,3}/, trim: true)
         %Feature{line: line, name: name}
 
-      line =~ ~r/^Scenario: / ->
-        [ name | _ ] = String.split(line, ~r{^Scenario: }, trim: true)
+      line =~ ~r/^Scenario(:| ){1,3}/ ->
+        [ name | _ ] = String.split(line, ~r/^Scenario(:| ){1,3}/ , trim: true)
         %Scenario{line: line, name: name}
 
       line =~ ~r/^(Given|When|Then|And) / ->
-        [ action | step ] = String.split(line, ~r{^(Given|When|And|Then) }, trim: true)
-        %Step{line: line, step: List.first(step), type: String.to_atom(action) }
+        [ action | rest ] = String.split(line, " ")
+        %Step{line: line, step: Enum.join(rest, " "), type: String.to_atom(action) }
+
+      true ->
+        %Text{line: line}
     end
   end
 end
