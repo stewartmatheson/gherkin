@@ -1,16 +1,17 @@
 defmodule FeatureTest do
   use ExUnit.Case
 
-  feature = [
-    "Scenario : Something",
-    "As a user",
-    "When I  do something",
-    "Something should happen",
-    "Given",
-    "When",
-    "Then"
-  ]
+  test "Features get parsed correctly" do
+    feature = [
+      "Feature : Something",
+      "As a user",
+      "I should be able to do some other stuff",
+      "Scenario : Users want to be able to do something",
+      "When I do something",
+      "Given something has happend",
+      "Then something should have happened"
+    ]
 
-  parsed_feature = Gherkin.Feature.parse(feature)
-  #assert %Gherkin.Feature{ feature_name: "Something"} == parsed_feature
+    assert %Gherkin.Ast.Feature{ name: "Something"} == Gherkin.Feature.parse(feature)
+  end
 end
