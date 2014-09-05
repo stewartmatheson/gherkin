@@ -7,4 +7,7 @@ defmodule Gherkin.Ast do
 
   defmodule Feature, do: defstruct name: "", scenarios: [], feature_description: []
   defmodule Scenario, do: defstruct name: "", steps: []
+  defmodule Given, do: defstruct text: "", parameters: []
+  defmodule When, do: defstruct text: "", parameters: []
+  defmodule Then, do: defstruct text: "", parameters: []
 end
